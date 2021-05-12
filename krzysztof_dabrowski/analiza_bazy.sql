@@ -37,7 +37,7 @@ where a.city_id is null;
 --- Wynik: --- 
 --- kolumna address2 zawsze pusta
 --- w kolumnie postal_code czasami nulle , phone i distinct maja wbite chyba spacje
---- klucze obce w porz¹dku
+--- klucze obce w porzadku
 
 --- Badanie: tabela category --- 
 
@@ -127,7 +127,7 @@ from film f
 where f.original_language_id is null; 
 
 
---- Wynik: klumna original_language_id jest zawsze nullem , reszta w porz¹dku 
+--- Wynik: klumna original_language_id jest zawsze nullem , reszta w porzadku 
 --- klucze obce w porzadku
 
 -- Badanie: tabela inventory ---
@@ -209,6 +209,4 @@ from store s;
 
 --- pozostale informacje ---------
 
-
---- original_language_id zawsze NULL 
---- payment_p2007_xxx --> puste tabele 
+--- tabele payment_p2007_xxx --> puste tabele 
