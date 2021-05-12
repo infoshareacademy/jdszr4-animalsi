@@ -8,7 +8,7 @@ where a.first_name is null
 or a.last_name is null; 
 
 --- wynik: nie ma wartosci pustych w first_name ani w last_name
---- klucze obce w porzadku
+--- klucze obce nie sa puste
 
 -- Badanie: tabela address --- 
 
@@ -37,7 +37,7 @@ where a.city_id is null;
 --- Wynik: --- 
 --- kolumna address2 zawsze pusta
 --- w kolumnie postal_code czasami nulle , phone i distinct maja wbite chyba spacje
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 --- Badanie: tabela category --- 
 
@@ -46,7 +46,7 @@ from category c ;
 
 
 ---  Wynik: mala tabela , wyglada dobrze
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 --- Badanie: tabela city --- 
 
@@ -63,7 +63,7 @@ from city c
 where c.country_id is null; 
 
 --- Wynik: Wyglada dobrze
---- kluczze obce w porzadku
+--- kluczze obce  nie sa puste
 
 --- Badanie: tabela country --- 
 
@@ -77,7 +77,7 @@ where c.country is null
 or c.country  ~ '^ *$';  
 
 --- Wynik:  Wyglada dobrze
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 --- Badanie: tabela customer --- 
 
@@ -103,7 +103,7 @@ where c.store_id is null
 or c.address_id  is null;
 
 --- Wynik: Wyglada dobrze , emaile sa poprawne
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 --- Badanie: tabela film ---
 
@@ -128,7 +128,7 @@ where f.original_language_id is null;
 
 
 --- Wynik: klumna original_language_id jest zawsze nullem , reszta w porzadku 
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 -- Badanie: tabela inventory ---
 
@@ -141,15 +141,14 @@ where i.film_id is null
 or i.store_id  is null; 
 
 --- Wynik: wyglada ok  
---- klucze obce w porzadku 
-
+--- klucze obce  nie sa puste
 --- Badanie: tabela language ---
 
 select * 
 from "language" l ;
 
 --- Wynik: wyglada ok 
---- klucze obce w porzadku 
+--- klucze obce  nie sa puste
 
 --- Badanie: tabela payment ---
 
@@ -169,7 +168,7 @@ or p.rental_id is null;
 
 
 --- Wynik: Wyglada ok
---- klucze obce w porzadku 
+--- klucze obce  nie sa puste
 
 -- Badanie: tabela rental ---
 select *
@@ -187,7 +186,7 @@ or r.customer_id is null
 or r.staff_id  is null;
 
 --- Wynik: Sa takie rekordy ze kolumna return_date jest pusta , poza tym okej 
---- klucze obce w porzadku 
+--- klucze obce  nie sa puste
 
 -- Badanie: tabela staff ---
 
@@ -195,7 +194,7 @@ select *
 from staff s ; 
 
 --- Wynik: Kolumna picture pusta, reszta okej
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 -- Badanie: tabela store ( tylko 2) ---
 
@@ -203,7 +202,7 @@ select *
 from store s; 
 
 --- Wynik: Wyglada okej 
---- klucze obce w porzadku
+--- klucze obce  nie sa puste
 
 
 
