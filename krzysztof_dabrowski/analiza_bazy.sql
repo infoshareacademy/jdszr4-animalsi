@@ -209,3 +209,25 @@ from store s;
 --- pozostale informacje ---------
 
 --- tabele payment_p2007_xxx --> puste tabele 
+
+--- Anomalie --- 
+
+--- nie wiem czemu pod jedno wypozyczenie podpietych jest iles platnosci od roznych klientow
+
+select p.rental_id 
+,	   count(*)	
+from payment p
+join rental r on p.rental_id = r.rental_id 
+group by p.rental_id 
+order by 2 desc;
+
+select * 
+from payment p 
+where p.rental_id = 1; 
+
+
+select * 
+from payment p 
+where p.rental_id = 291; 
+
+
