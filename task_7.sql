@@ -48,6 +48,7 @@ from
 	,	   count(*) as liczba_wypozyczen	
 	from rental r 
 	join inventory i on r.inventory_id = i.inventory_id 
+	where r.return_date is not null
 	group by 1
 ) zestawienie_wypozyczen
 
@@ -70,7 +71,7 @@ where fa.film_id  in (
 			,	   count(*) as liczba_wypozyczen	
 			from rental r 
 			join inventory i on r.inventory_id = i.inventory_id 
-			where i.film_id != 257
+			where i.film_id != 257 and r.return_date is not null
 			group by 1
 			having count(*) <= ( 
 		                     	 select q_25
@@ -82,14 +83,27 @@ where fa.film_id  in (
 
 --- aktorzy ktorzy wybiajaja sie na poczatek listy 
 
-create temp table top_20_aktorow_najrzadziej_wypozyczane_filmy
+drop table  top_20_aktorow_najrzadziej_wypozyczane_filmy; 
+
+create temp table top_30_aktorow_najrzadziej_wypozyczane_filmy
 as
 select actor_id, 
        count(*) as liczba_filmow
 from aktorzy_w_najrzadziej_wypozyczanych_filmach
 group by 1 
 order by 2 desc
-limit 20;
+limit 30;
+
+--- histogram dla powyzszej tabelki bez limitu ( pomogl mi ustalic limit )
+
+select distinct count(*) as liczba_filmow_per_aktor
+       ,      count(*) over (partition by count(*)) as liczba_rekordow
+from aktorzy_w_najrzadziej_wypozyczanych_filmach
+group by actor_id 
+order by 1 desc;
+
+
+
 
 select actor_id, 
        count(*) as liczba_filmow
@@ -103,7 +117,7 @@ select i.film_id
 ,	   count(*) as liczba_wypozyczen	
 from rental r 
 join inventory i on r.inventory_id = i.inventory_id 
-where i.film_id != 257
+where i.film_id != 257 and r.return_date is not null
 group by 1
 having count(*) >= (
                       ( 
@@ -127,7 +141,7 @@ where fa.film_id  in (
 			,	   count(*) as liczba_wypozyczen	
 			from rental r 
 			join inventory i on r.inventory_id = i.inventory_id 
-			where i.film_id != 257
+			where i.film_id != 257 and r.return_date is not null
 			group by 1
 			having count(*) >= ( 
 		                     	 select q_75
@@ -140,14 +154,28 @@ where fa.film_id  in (
 
 --- aktorzy ktorzy wyibiaja sie na poczatek listy 
 
-create temp table top_20_aktorow_najczesciej_wypozyczane_filmy
+drop table top_20_aktorow_najczesciej_wypozyczane_filmy; 
+create temp table top_30_aktorow_najczesciej_wypozyczane_filmy
 as
 select actor_id, 
 	  count(*) as liczba_filmow
 from aktorzy_w_najczesciej_wypozyczanych_filmach
 group by 1 
 order by 2 desc
-limit 20;
+limit 30;
+
+
+--- histogram dla powyzszej tabelki bez limitu ( pomogl mi ustalic limit )
+
+select distinct count(*) as liczba_filmow_per_aktor
+       ,      count(*) over (partition by count(*)) as liczba_rekordow
+from aktorzy_w_najczesciej_wypozyczanych_filmach
+group by actor_id 
+order by 1 desc;
+
+
+
+
 
 select actor_id, 
        count(*) as liczba_filmow
@@ -159,23 +187,23 @@ order by 1;
 
 
 select actor_id 
-from top_20_aktorow_najrzadziej_wypozyczane_filmy
+from top_30_aktorow_najrzadziej_wypozyczane_filmy
 
 intersect
 
 select actor_id 
-from top_20_aktorow_najczesciej_wypozyczane_filmy;
+from top_30_aktorow_najczesciej_wypozyczane_filmy;
 
---- Wyniki analizy: w czesci wspolnej mamy tylko 2 rekordy 65 i 198
+--- Wyniki analizy: w czesci wspolnej mamy tylko 4 rekordy 65 , 82 , 198 i 107
 --- Wynika z tego ze ktorzy 
 
 select *
-from top_20_aktorow_najrzadziej_wypozyczane_filmy
-where actor_id in (65,198);
+from top_30_aktorow_najrzadziej_wypozyczane_filmy
+where actor_id in (65,82,198,107);
 
 select *
-from top_20_aktorow_najczesciej_wypozyczane_filmy
-where actor_id in (65,198);
+from top_30_aktorow_najczesciej_wypozyczane_filmy
+where actor_id in (65,82,198,107);
 
 --- analiza pozyzszych danych pod katem kategorii filmow w jakicjh wsytepowal aktor  --- 
 
@@ -198,7 +226,7 @@ where fa.film_id  in (
 			,	   count(*) as liczba_wypozyczen	
 			from rental r 
 			join inventory i on r.inventory_id = i.inventory_id 
-			where i.film_id != 257
+			where i.film_id != 257 and r.return_date is not null
 			group by 1
 			having count(*) <= ( 
 		                     	 select q_10
@@ -211,6 +239,8 @@ where fa.film_id  in (
 
 --- aktorzy ktorzy wybiajaja sie na prowadzenie
 
+drop table top_20_aktorow_najrzadziej_wypozyczane_filmy_2;
+
 create temp table top_20_aktorow_najrzadziej_wypozyczane_filmy_2
 as
 select actor_id, 
@@ -219,6 +249,16 @@ from aktorzy_w_najrzadziej_wypozyczanych_filmach_2
 group by 1 
 order by 2 desc
 limit 20;
+
+--- histogram dla powyzszej tabelki bez limitu ( pomogl mi ustalic limit )
+
+select distinct count(*) as liczba_filmow_per_aktor
+       ,      count(*) over (partition by count(*)) as liczba_rekordow
+from aktorzy_w_najrzadziej_wypozyczanych_filmach_2
+group by actor_id 
+order by 1 desc;
+
+
 
 select actor_id, 
        count(*) as liczba_filmow
@@ -244,7 +284,7 @@ where fa.film_id  in (
 			,	   count(*) as liczba_wypozyczen	
 			from rental r 
 			join inventory i on r.inventory_id = i.inventory_id 
-			where i.film_id != 257
+			where i.film_id != 257 and r.return_date is not null
 			group by 1
 			having count(*) >= ( 
 		                     	 select q_90
@@ -254,6 +294,8 @@ where fa.film_id  in (
 )
 
 
+drop table top_20_aktorow_najczesciej_wypozyczane_filmy_2; 
+
 create temp table top_20_aktorow_najczesciej_wypozyczane_filmy_2
 as
 select actor_id, 
@@ -262,6 +304,19 @@ from aktorzy_w_najczesciej_wypozyczanych_filmach_2
 group by 1 
 order by 2 desc
 limit 20;
+
+
+---- histogram dla powyzszej tabelki bez limitu ( pomogl mi ustalic limit )
+
+select distinct count(*) as liczba_filmow_per_aktor
+       ,      count(*) over (partition by count(*)) as liczba_rekordow
+from aktorzy_w_najczesciej_wypozyczanych_filmach_2
+group by actor_id 
+order by 1 desc;
+
+
+
+
 
 select actor_id, 
        count(*) as liczba_filmow
@@ -281,42 +336,98 @@ select actor_id
 from top_20_aktorow_najczesciej_wypozyczane_filmy_2;
 
 
---- Wyniki analizy: w czesci wspolnej mamy tylko 2 rekordy 65,90  i55
+--- Wyniki analizy: w czesci wspolnej mamy tylko 3 rekordy 65,198 i 107
 
 select *
-from top_20_aktorow_najrzadziej_wypozyczane_filmy
-join actor a2 on top_20_aktorow_najrzadziej_wypozyczane_filmy.actor_id = a2.actor_id 
-where actor_id in (65,90,155);
+from top_20_aktorow_najrzadziej_wypozyczane_filmy_2 as t20
+join actor a2 on t20.actor_id = a2.actor_id 
+where t20.actor_id in (65,198,107);
 
 select *
-from top_20_aktorow_najczesciej_wypozyczane_filmy
-where actor_id in (65,90,155);
+from top_20_aktorow_najczesciej_wypozyczane_filmy_2 as t20
+join actor a2 on t20.actor_id = a2.actor_id 
+where t20.actor_id in (65,198,107);
 
 
---- analiza pozyzszych danych pod katem kategorii filmow w jakicjh wsytepowal aktor  --- 
+--- analiza pozyzszych danych pod katem kategorii filmow w jakicjh wsytepowal aktor  ---
+--- sprawdzamy w ilu kategoriach grali aktorzy w filamch najlepiej i najgorzej wyzpoyczanych ---  
 
 --- kwantyle 0.25 oraz 0.75  
 
-select * 
-from category c ; -- mamy 16 kategorii filmow 
-
-select fc.film_id 
-,	   c."name" 
-from film_category fc 
-join category c  on fc.category_id  = c.category_id ;
 
 
-select * 
-from aktorzy_w_najczesciej_wypozyczanych_filmach_2
+ --- kwantyle 0.10 raz 0.90 --- 
+
+--- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami  
+
+select a2.actor_id
+,      kat.name
+,      kat.film_id
+from aktorzy_w_najczesciej_wypozyczanych_filmach_2 as a2
 join (
 		select fc.film_id 
 	    ,	   c."name" 
 	    from film_category fc
 	    join category c  on fc.category_id  = c.category_id 
     ) kat 
-     on kat.film_id = aktorzy_w_najczesciej_wypozyczanych_filmach_2.film_id ;
+     on kat.film_id = a2.film_id ;
+
+select a2.actor_id
+,      count(kat.name) as ile_kategorii
+from aktorzy_w_najczesciej_wypozyczanych_filmach_2 as a2
+join (
+		select fc.film_id 
+		,	   c."name" 
+		from film_category fc
+		join category c  on fc.category_id  = c.category_id 
+	) kat 
+	     on kat.film_id = a2.film_id 
+group by 1
+order by 2 desc;
+
+-- histogram 
+
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najczesciej_wypozyczanych_filmach_2 as a2
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a2.film_id 
+group by a2.actor_id
+order by 2 desc;
+   
 
 
+--- statystki dotyczace powyzszego zestawinia 
+
+select round(avg(ile_kategorii),2) as srednia_liczba_kategorii_per_aktor
+,      percentile_cont(0.25) within group ( order by ile_kategorii ) as q_25
+,	   percentile_cont(0.50) within group ( order by ile_kategorii) as mediana
+,      percentile_cont(0.75) within group ( order by ile_kategorii ) as q_75
+,      mode() within group ( order by ile_kategorii ) as moda
+,      min(ile_kategorii) as minimalna_liczba_kategorii
+,      max(ile_kategorii) as maksymalna_liczba_kategorii
+from 
+(
+	select a2.actor_id
+	,      count(kat.name) as ile_kategorii
+	from aktorzy_w_najczesciej_wypozyczanych_filmach_2 as a2
+	join (
+			select fc.film_id 
+		    ,	   c."name" 
+		    from film_category fc
+		    join category c  on fc.category_id  = c.category_id 
+	    ) kat 
+	     on kat.film_id = a2.film_id 
+	group by 1
+	order by 2 desc
+) zest_ile_kategorii
+
+--- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami  
 
 select * 
 from aktorzy_w_najrzadziej_wypozyczanych_filmach_2
@@ -328,5 +439,46 @@ join (
     ) kat 
      on kat.film_id = aktorzy_w_najrzadziej_wypozyczanych_filmach_2.film_id ;
 
+--- histogram 
 
- --- kwantyle 0.10 raz 0.90 --- 
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najrzadziej_wypozyczanych_filmach_2 as a2
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a2.film_id 
+group by a2.actor_id
+order by 1 desc;
+   
+
+--- statystyki dotyczace powyzszego zestawienia 
+
+select round(avg(ile_kategorii),2) as srednia_liczba_kategorii_per_aktor
+,      percentile_cont(0.25) within group ( order by ile_kategorii ) as q_25
+,	   percentile_cont(0.50) within group ( order by ile_kategorii) as mediana
+,      percentile_cont(0.75) within group ( order by ile_kategorii ) as q_75
+,      mode() within group ( order by ile_kategorii ) as moda
+,      min(ile_kategorii) as minimalna_liczba_kategorii
+,      max(ile_kategorii) as maksymalna_liczba_kategorii
+from 
+(
+    select a2.actor_id
+	,      count(kat.name) as ile_kategorii 
+	from aktorzy_w_najrzadziej_wypozyczanych_filmach_2 as a2
+	join (
+			select fc.film_id 
+		    ,	   c."name" 
+		    from film_category fc
+		    join category c  on fc.category_id  = c.category_id 
+	    ) kat 
+	     on kat.film_id = a2.film_id 
+	group by 1
+	order by 2 desc
+) zest_ile_kategorii
+
+    
+    
