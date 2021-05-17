@@ -31,7 +31,6 @@ order by 2 desc;
 
 --- tabela w ktorej przechowujemy dane statystyczne dotyczace powyzszej tabeli --
 
-drop table analiza;
 create temp table analiza
 as 
 select percentile_cont(0.10) within group ( order by liczba_wypozyczen ) as q_10
@@ -232,8 +231,6 @@ order by 1;
 --- kwantyl 0.90 -- aktorzy wraz z najczesciej wypozyczanymi filmami , liczba wypozyczen mniejsza niz 90 % z wszystkich liczb wypozyczen filmow   ---
 
 
-drop table aktorzy_w_najczestszych_filmach_2;
-
 create temp table aktorzy_w_najczesciej_wypozyczanych_filmach_2
 as
 select fa.actor_id 
@@ -298,6 +295,11 @@ where actor_id in (65,90,155);
 
 --- analiza pozyzszych danych pod katem kategorii filmow w jakicjh wsytepowal aktor  --- 
 
+--- kwantyle 0.25 oraz 0.75  
+
+select * 
+from category c ; -- mamy 16 kategorii filmow 
+
 select fc.film_id 
 ,	   c."name" 
 from film_category fc 
@@ -326,3 +328,5 @@ join (
     ) kat 
      on kat.film_id = aktorzy_w_najrzadziej_wypozyczanych_filmach_2.film_id ;
 
+
+ --- kwantyle 0.10 raz 0.90 --- 
