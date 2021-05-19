@@ -97,8 +97,6 @@ where fa.film_id  in (
 
 --- aktorzy ktorzy wybiajaja sie na poczatek listy 
 
-drop table  top_20_aktorow_najrzadziej_wypozyczane_filmy; 
-
 create temp table top_30_aktorow_najrzadziej_wypozyczane_filmy
 as
 select actor_id, 
@@ -164,7 +162,6 @@ where fa.film_id  in (
 
 --- aktorzy ktorzy wyibiaja sie na poczatek listy 
 
-drop table top_20_aktorow_najczesciej_wypozyczane_filmy; 
 create temp table top_30_aktorow_najczesciej_wypozyczane_filmy
 as
 select actor_id, 
@@ -182,9 +179,6 @@ select distinct count(*) as liczba_filmow_per_aktor
 from aktorzy_w_najczesciej_wypozyczanych_filmach
 group by actor_id 
 order by 1 desc;
-
-
-
 
 
 select actor_id, 
@@ -205,7 +199,8 @@ select actor_id
 from top_30_aktorow_najczesciej_wypozyczane_filmy;
 
 --- Wyniki analizy: w czesci wspolnej mamy tylko 4 rekordy 65 , 82 , 198 i 107
---- Wynika z tego ze ktorzy 
+--- Rezultat: Wynika z tego ze najrzadziej i najczeœciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
+--- Idac dalej mozna powiedziec ze aktor ma wplyw na liczbe wypozyczen filmow  
 
 select a2.first_name
 ,      a2.last_name
@@ -222,6 +217,9 @@ from top_30_aktorow_najczesciej_wypozyczane_filmy as t30
 join actor a2 on t30.actor_id = a2.actor_id 
 where t30.actor_id in (65,82,198,107)
 order by 3 desc; 
+
+--- Z powyzszeg wynika dodatkow ze aktorzy z czesci wspolnej czesto wystepuja w najrzadziej oraz najczesciej wypozyczanych filmach .
+--- W zwiazku z tym ciezko wywniposkowac jak wplywaja na powuzsze wynkiki ale sa mala czescia z calosci wynikow
 
 
 --- filmy wraz z aktorami ktore wpadaja w graniczne przedzialy pod katem liczby wypozycze - kwantyle 0.10 oraz 0.90 ---
@@ -254,8 +252,6 @@ where fa.film_id  in (
 
 
 --- aktorzy ktorzy wybiajaja sie na prowadzenie
-
-drop table top_20_aktorow_najrzadziej_wypozyczane_filmy_2;
 
 create temp table top_20_aktorow_najrzadziej_wypozyczane_filmy_2
 as
@@ -310,8 +306,6 @@ where fa.film_id  in (
 )
 
 
-drop table top_20_aktorow_najczesciej_wypozyczane_filmy_2; 
-
 create temp table top_20_aktorow_najczesciej_wypozyczane_filmy_2
 as
 select actor_id, 
@@ -350,7 +344,8 @@ from top_20_aktorow_najczesciej_wypozyczane_filmy_2;
 
 
 --- Wyniki analizy: w czesci wspolnej mamy tylko 3 rekordy 65,198 i 107
-
+--- Rezultat: Wynika z tego ze najrzadziej i najczeœciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
+--- Idac dalej mozna powiedziec ze aktor ma wplyw na liczbe wypozyczen filmow  
 
 select a2.first_name
 ,      a2.last_name
@@ -367,6 +362,10 @@ from top_20_aktorow_najczesciej_wypozyczane_filmy_2 as t20
 join actor a2 on t20.actor_id = a2.actor_id 
 where t20.actor_id in (65,198,107)
 order by 3 desc; 
+
+--- Z powyzszeg wynika dodatkow ze aktorzy z czesci wspolnej czesto wystepuja w najrzadziej oraz najczesciej wypozyczanych filmach .
+--- W zwiazku z tym ciezko wywniposkowac jak wplywaja na powuzsze wynkiki ale sa mala czescia z calosci wynikow
+
 
 
 --- analiza pozyzszych danych pod katem kategorii filmow w jakicjh wsytepowal aktor  ---
@@ -443,6 +442,10 @@ from
 	order by 2 desc
 ) zest_ile_kategorii
 
+--- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 8 filmach w adanej probie.
+--- Pozwala to stwierdzic ze miara popularnosci filmow nie sa pojedynczy aktorzy a raczej wieksza czesc obsady   
+
+
 --- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.25 --------  
 
 select * 
@@ -510,7 +513,8 @@ from
 	order by 2 desc
 ) zest_ile_kategorii
 
-
+--- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 8 filmach w badanej probie.
+--- Pozwala to stwierdzic ze miara braku popularnosci filmow nie sa pojedynczy aktorzy a raczej wieksza czesc obsady   
 
 
 
@@ -585,6 +589,12 @@ from
 	order by 2 desc
 ) zest_ile_kategorii
 
+--- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 3 filmach w adanej probie.
+--- Pozwala to stwierdzic ze miara popularnosci filmow nie sa pojedynczy aktorzy a raczej wieksza czesc obsady   
+--- Ta proba odnosi sie do 10 % najczesciej wypozyczanych filmow a wiec zakres jest wezszy niz przy kwantylu 0,75 . 
+---   Widac tutaj ze aktorzy graja w mniejszej ilosci kategorii a wiec aktorzy grajacy w najczescies wypozyczanych filmach sa skupienia na mniejszej liczbie kategrii filmow. 
+  
+
 --- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.10 --------  
 
 select * 
@@ -651,5 +661,10 @@ from
 	order by 2 desc
 ) zest_ile_kategorii
 
-    
+
+--- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 3 filmach w adanej probie.
+--- Pozwala to stwierdzic ze miara popularnosci filmow nie sa pojedynczy aktorzy a raczej wieksza czesc obsady   
+--- Ta proba odnosi sie do 10 % najrzadziej wypozyczanych filmow a wiec zakres jest wezszy niz przy kwantylu 0,25 . 
+ ---   Widac tutaj ze aktorzy graja w mniejszej ilosci kategorii a wiec aktorzy grajacy w najrzadziejs wypozyczanych filmach sa skupieni na mniejszej liczbie kaegorii filmow. 
+
     
