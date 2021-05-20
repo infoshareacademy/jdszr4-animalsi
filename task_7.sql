@@ -56,7 +56,7 @@ from
 --- filmy wraz z aktorami ktore wpadaja w graniczne przedzialy pod katem liczby wypozyczen - kwantyle 0.25 oraz 0.75 ---
 --------------------------------------------------------------------------------------------------------
 
---- kwantyl 0.25 -- aktorzy wraz z najmniej wypozyczanymi filmami , liczba wypozyczen mniejsza niz 25 % z wszystkich liczb wypozyczen filmow   ---
+--- kwantyl 0.25 -- aktorzy wraz z najmniej wypozyczanymi filmami , liczba wypozyczen <= 25 % z wszystkich liczb wypozyczen filmow   ---
 
 select i.film_id 
 ,	   count(*) as liczba_wypozyczen	
@@ -121,7 +121,7 @@ from aktorzy_w_najrzadziej_wypozyczanych_filmach
 group by 1 
 order by 1;
 
---- kwantyl 0.75 -- aktorzy wraz z najczesciej wypozyczanymi filmami , liczba wypozyczen wieksza niz 75 % z wszystkich liczb wypozyczen filmow ---
+--- kwantyl 0.75 -- aktorzy wraz z najczesciej wypozyczanymi filmami , liczba wypozyczen filmu >= 75 % z wszystkich liczb wypozyczen filmow ---
 
 select i.film_id 
 ,	   count(*) as liczba_wypozyczen	
@@ -225,7 +225,7 @@ order by 3 desc;
 --- filmy wraz z aktorami ktore wpadaja w graniczne przedzialy pod katem liczby wypozycze - kwantyle 0.10 oraz 0.90 ---
 --------------------------------------------------------------------------------------------------------- 
 
---- kwantyl 0.10 -- aktorzy wraz z najmniej wypozyczanymi filmami , liczba wypozyczen mniejsza niz 10 % z wszystkich liczb wypozyczen filmow   ---
+--- kwantyl 0.10 -- aktorzy wraz z najmniej wypozyczanymi filmami , liczba wypozyczen <= 10 % z wszystkich liczb wypozyczen filmow   ---
 
 create temp table aktorzy_w_najrzadziej_wypozyczanych_filmach_2
 as
@@ -280,7 +280,7 @@ order by 1;
 
 
 
---- kwantyl 0.90 -- aktorzy wraz z najczesciej wypozyczanymi filmami , liczba wypozyczen mniejsza niz 90 % z wszystkich liczb wypozyczen filmow   ---
+--- kwantyl 0.90 -- aktorzy wraz z najczesciej wypozyczanymi filmami , liczba wypozyczen wieksza >= 90 % z wszystkich liczb wypozyczen filmow   ---
 
 
 create temp table aktorzy_w_najczesciej_wypozyczanych_filmach_2
@@ -305,6 +305,8 @@ where fa.film_id  in (
 		) filmy_najczestsze
 )
 
+
+--- aktorzy ktorzy wybijaja sie na prowadzenie
 
 create temp table top_20_aktorow_najczesciej_wypozyczane_filmy_2
 as
@@ -373,7 +375,7 @@ order by 3 desc;
 
 --- kwantyle 0.25 oraz 0.75  
 
---- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.75 ----- 
+--- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.75 ,  liczba wypozyczen filmu >= 75 % z wszystkich liczb wypozyczen filmow  ----- 
 
 select a.actor_id
 ,      kat.name
@@ -415,6 +417,18 @@ join (
 group by a.actor_id
 order by 2 desc;
    
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najczesciej_wypozyczanych_filmach as a
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a.film_id 
+group by a.actor_id
+order by 1;
 
 
 --- statystki dotyczace powyzszego zestawinia 
@@ -439,14 +453,13 @@ from
 	    ) kat 
 	     on kat.film_id = a.film_id 
 	group by 1
-	order by 2 desc
 ) zest_ile_kategorii
 
 --- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 8 filmach w adanej probie.
 --- Pozwala to stwierdzic ze miara popularnosci filmow nie sa pojedynczy aktorzy a raczej wieksza czesc obsady   
 
 
---- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.25 --------  
+--- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.25 ,  liczba wypozyczen filmu <= 25 % z wszystkich liczb wypozyczen filmow --------  
 
 select * 
 from aktorzy_w_najrzadziej_wypozyczanych_filmach as a
@@ -485,8 +498,20 @@ join (
     ) kat 
      on kat.film_id = a.film_id 
 group by a.actor_id
-order by 1 desc;
+order by 2 desc;
    
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najrzadziej_wypozyczanych_filmach as a
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a.film_id 
+group by a.actor_id
+order by 1;
 
 --- statystyki dotyczace powyzszego zestawienia 
 
@@ -510,7 +535,6 @@ from
 	    ) kat 
 	     on kat.film_id = a.film_id 
 	group by 1
-	order by 2 desc
 ) zest_ile_kategorii
 
 --- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 8 filmach w badanej probie.
@@ -520,7 +544,7 @@ from
 
  --- kwantyle 0.10 raz 0.90 --- 
 
---- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.90 ----- 
+--- zestawienie aktorow grajacych w najczesciej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.90,  liczba wypozyczen filmu >= 90 % z wszystkich liczb wypozyczen filmow ----- 
 
 select a2.actor_id
 ,      kat.name
@@ -561,6 +585,19 @@ join (
      on kat.film_id = a2.film_id 
 group by a2.actor_id
 order by 2 desc;
+
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najczesciej_wypozyczanych_filmach_2 as a2
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a2.film_id 
+group by a2.actor_id
+order by 1 ;
    
 
 
@@ -586,7 +623,6 @@ from
 	    ) kat 
 	     on kat.film_id = a2.film_id 
 	group by 1
-	order by 2 desc
 ) zest_ile_kategorii
 
 --- Rezultat: Jak widac ze statystyk polowa aktoriw grala w co najmniej 3 filmach w adanej probie.
@@ -595,7 +631,7 @@ from
 ---   Widac tutaj ze aktorzy graja w mniejszej ilosci kategorii a wiec aktorzy grajacy w najczescies wypozyczanych filmach sa skupienia na mniejszej liczbie kategrii filmow. 
   
 
---- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.10 --------  
+--- zestawienie aktorow grajacych w narzadziej wypozyczanych filmach wraz z ich kategoriami , kwantyl 0.10 ,  liczba wypozyczen filmu <= 10 % z wszystkich liczb wypozyczen filmow --------  
 
 select * 
 from aktorzy_w_najrzadziej_wypozyczanych_filmach_2
@@ -619,6 +655,8 @@ join (
 	     on kat.film_id = a2.film_id 
 group by 1
 order by 2 desc;
+
+
     
 --- histogram 
 
@@ -633,7 +671,20 @@ join (
     ) kat 
      on kat.film_id = a2.film_id 
 group by a2.actor_id
-order by 1 desc;
+order by 2 desc;
+   
+select distinct count(kat.name) as ile_lategorii_per_aktor 
+,      count(*) over (partition by count(kat.name) )
+from aktorzy_w_najrzadziej_wypozyczanych_filmach_2 as a2
+join (
+		select fc.film_id 
+	    ,	   c."name" 
+	    from film_category fc
+	    join category c  on fc.category_id  = c.category_id 
+    ) kat 
+     on kat.film_id = a2.film_id 
+group by a2.actor_id
+order by 1;
    
 
 --- statystyki dotyczace powyzszego zestawienia 
@@ -658,7 +709,6 @@ from
 	    ) kat 
 	     on kat.film_id = a2.film_id 
 	group by 1
-	order by 2 desc
 ) zest_ile_kategorii
 
 
