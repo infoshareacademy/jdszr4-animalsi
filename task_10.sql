@@ -61,28 +61,75 @@ where fa.film_id in (
 	select f.film_id 
 	from film f
 	where f.rental_rate = 4.99  
-
-
 ) 
 
-select  amc.actor_id
+select  adc.actor_id
 ,       count(*) as liczba_flimow
-from aktorzy_duza_cena_dzienna amc
+from aktorzy_duza_cena_dzienna adc
 group by 1 
 order by 2 desc;
 
 
-select count(*) 
-from actor a ;
+create temp table aktorzy_srednia_cena_dzienna
+as
+select * 
+from film_actor fa 
+where fa.film_id in (
+	
+	select f.film_id 
+	from film f
+	where f.rental_rate = 2.99  
+) 
 
+select  aksc.actor_id
+,       count(*) as liczba_flimow
+from aktorzy_srednia_cena_dzienna aksc
+group by 1 
+order by 2 desc;
+
+
+
+select count(*) 
+from actor a ; --- 200 aktorow w bazie
+
+
+--- Proba porowanania zbiorow 
 
 select  actor_id
-from aktorzy_mala_cena_dzienna
+from aktorzy_mala_cena_dzienna --- cena: 0.99
 
 intersect 
 
 select  actor_id
-from aktorzy_duza_cena_dzienna
+from aktorzy_duza_cena_dzienna --- cena 4.99
+
+--- Wynik : 200 aktorow co jest rowne ogolnej ilosci aktorow 
+--- Wnika z tego ze aktor nie ma zbyt duzego wplywu na skrajne dzienne ceny wypozycen filmow 
+
+
+select  actor_id
+from aktorzy_mala_cena_dzienna --- cena 0.99
+
+intersect 
+
+select  actor_id
+from aktorzy_srednia_cena_dzienna --- cena 2.99
+
+--- Wynik : 200 aktorow co jest rowne ogolnej ilosci aktorow 
+--- Wnika z tego ze aktor nie ma zbyt duzego wplywu na srednia i mala cene wypozyczen filmow 
+
+
+select  actor_id
+from aktorzy_srednia_cena_dzienna --- cena 2.99
+
+intersect 
+
+select  actor_id
+from aktorzy_duza_cena_dzienna   --- cena 4.99
+
+--- Wynik : 200 aktorow co jest rowne ogolnej ilosci aktorow 
+--- Wnika z tego ze aktor nie ma zbyt duzego wplywu na duza i mala  ceny wypozycen filmow 
+
 
 
 select fa.actor_id,
