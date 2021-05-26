@@ -107,8 +107,8 @@ as
 								    and r.return_date is not null
 								  group by 1
 								  having count(*) <= ( 
-							                     	    select q_25
-							                      	      from analiza
+							                     	   select q_25
+							                      	     from analiza
 							                         )
 							  ) filmy_najrzadsze 
 					  )
@@ -128,7 +128,7 @@ as
 --- histogram dla powyzszej tabelki bez limitu ( pomogl mi ustalic limit )
 
 select distinct count(*) as liczba_filmow_per_aktor,      
-       count(*) over (partition by count(*)) as liczba_rekordow
+                count(*) over (partition by count(*)) as liczba_rekordow
   from aktorzy_w_najrzadziej_wypozyczanych_filmach
  group by actor_id 
  order by 1 desc;
@@ -151,8 +151,8 @@ select i.film_id,
    and r.return_date is not null
  group by 1
  having count(*) >= ( 
-                       select q_75
-                         from analiza 
+                      select q_75
+                        from analiza 
 					)
  order by 2 desc;
 
@@ -165,17 +165,17 @@ as
   where fa.film_id in ( 
 					   	 select filmy_najczestsze.film_id 
 						 from (
-								 select i.film_id,	   
-								        count(*) as liczba_wypozyczen	
-								   from rental r 
-								        join inventory i 
-								        on r.inventory_id = i.inventory_id 
-								  where i.film_id != 257 
-								    and r.return_date is not null
-								  group by 1
-								  having count(*) >= ( 
-							                     	 	select q_75
-							                      		  from analiza
+							    select i.film_id,	   
+								       count(*) as liczba_wypozyczen	
+								  from rental r 
+								       join inventory i 
+								       on r.inventory_id = i.inventory_id 
+								 where i.film_id != 257 
+								   and r.return_date is not null
+								 group by 1
+								 having count(*) >= ( 
+							                     	  select q_75
+							                            from analiza
 							                         )
 							 ) filmy_najczestsze
  					)
@@ -551,8 +551,8 @@ select round(avg(ile_kategorii),2) as srednia_liczba_kategorii_per_aktor,
        percentile_cont(0.50) within group ( order by ile_kategorii) as mediana,      
        percentile_cont(0.75) within group ( order by ile_kategorii ) as q_75,      
        mode() within group ( order by ile_kategorii ) as moda,      
-       min(ile_kategorii) as minimalna_liczba_kategorii
-,      max(ile_kategorii) as maksymalna_liczba_kategorii
+       min(ile_kategorii) as minimalna_liczba_kategorii,      
+       max(ile_kategorii) as maksymalna_liczba_kategorii
 from 
 	(
 	 select a.actor_id,      
