@@ -84,8 +84,8 @@ select i.film_id,
  where i.film_id != 257 and r.return_date is not null
  group by 1
  having count(*) <= ( 
-		            select q_25
-		              from analiza
+		              select q_25
+		               from analiza
 		            )
  order by 2 desc; 
 		                
