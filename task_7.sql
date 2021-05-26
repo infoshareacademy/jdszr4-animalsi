@@ -218,7 +218,7 @@ select actor_id
   from top_30_aktorow_najczesciej_wypozyczane_filmy;
 
 --- Wyniki analizy: w czesci wspolnej mamy tylko 4 rekordy 65 , 82 , 198 i 107
---- Rezultat: Wynika z tego ze najrzadziej i najczeœciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
+--- Rezultat: Wynika z tego ze najrzadziej i najczeï¿½ciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
 --- Idac dalej mozna powiedziec ze aktor ma wplyw na liczbe wypozyczen filmow  
 
 select a2.first_name,      
@@ -366,7 +366,7 @@ from top_20_aktorow_najczesciej_wypozyczane_filmy_2;
 
 
 --- Wyniki analizy: w czesci wspolnej mamy tylko 3 rekordy 65,198 i 107
---- Rezultat: Wynika z tego ze najrzadziej i najczeœciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
+--- Rezultat: Wynika z tego ze najrzadziej i najczeï¿½ciej wypozyczane filmy roznia sie znaczaco obsada aktorska . 
 --- Idac dalej mozna powiedziec ze aktor ma wplyw na liczbe wypozyczen filmow  
 
 select a2.first_name,      
