@@ -2,235 +2,237 @@
 
 
 --- b) wyliczamy ranking popularnosci aktorow pod wzgledem dochodu z wypozyczen
-select 
+SELECT
   actor1.actor_id,
   actor1.first_name,
   actor1.last_name,
-  sum(tpc.amount) 									as dochod_z_wypozyczen 
-from tab_rental_clean trc
-join(
-select
+  SUM(tpc.amount) 									AS dochod_z_wypozyczen 
+FROM tab_rental_clean trc
+JOIN(
+SELECT
   amount,rental_id
-from tab_payment_clean) tpc 
-  on trc.rental_id = tpc.rental_id
-join tab_inventory_clean tic
-  on trc.inventory_id = tic.inventory_id
-join(
-select 
+FROM tab_payment_clean) tpc 
+  ON trc.rental_id = tpc.rental_id
+JOIN tab_inventory_clean tic
+  ON trc.inventory_id = tic.inventory_id
+JOIN(
+SELECT 
   actor_id,
   film_id
-from film_actor) fa
-  on tic.film_id = fa.film_id 
-join(
-select
+FROM film_actor) fa
+  ON tic.film_id = fa.film_id 
+JOIN(
+SELECT
   actor_id,
   first_name,
-  last_name from actor) actor1
-  on fa.actor_id = actor1.actor_id
-group by 1,2,3
-order by 4 desc
+  last_name FROM actor) actor1
+  ON fa.actor_id = actor1.actor_id
+GROUP BY 1,2,3
+ORDER BY 4 DESC
 
 --- wyliczamy w ilu filmach gral dany aktor
-select
+SELECT
   actor2.actor_id,
-  count(film_actor.film_id) 								as ilosc_filmow
-from film_actor 	
-join(
-select
+  COUNT(film_actor.film_id) 								AS ilosc_filmow
+FROM film_actor 	
+JOIN(
+SELECT
   actor.actor_id
-from actor) actor2
-  on film_actor.actor_id = actor2.actor_id 
-group by 1
+FROM actor) actor2
+  ON film_actor.actor_id = actor2.actor_id 
+GROUP BY 1
 
 --- ³¹czymy powy¿sze dane w 1 zbiór 
-create temp table tab1 as
-    select
+create temp table tab1 AS
+    SELECT
       actor3.actor_id,
       actor3.first_name,
       actor3.last_name, 
-      sum(tpc.amount) 								as dochod_z_wypozyczen
-    from tab_rental_clean trc
-    join(
-    select
+      SUM(tpc.amount) 								AS dochod_z_wypozyczen
+    FROM tab_rental_clean trc
+    JOIN(
+    SELECT
       amount,
       rental_id
-    from tab_payment_clean) tpc
-      on trc.rental_id = tpc.rental_id
-    join tab_inventory_clean tic
-      on trc.inventory_id = tic.inventory_id
-    join(
-    select
+    FROM tab_payment_clean) tpc
+      ON trc.rental_id = tpc.rental_id
+    JOIN tab_inventory_clean tic
+      ON trc.inventory_id = tic.inventory_id
+    JOIN(
+    SELECT
       actor_id,
       film_id
-    from film_actor) fa
-      on tic.film_id = fa.film_id 
-    join(
-    select
+    FROM film_actor) fa
+      ON tic.film_id = fa.film_id 
+    JOIN(
+    SELECT
       actor_id,
       first_name,
-      last_name from actor) actor3
-      on fa.actor_id = actor3.actor_id
-    group by 1,2,3
+      last_name FROM actor) actor3
+      ON fa.actor_id = actor3.actor_id
+   GROUP BY 1,2,3
 
 		
-create temp table tab2 as 
-    select
+create temp table tab2 AS 
+    SELECT
       actor4.actor_id,
-      count(fa.film_id)							as ilosc_filmow 
-    from film_actor fa 
-    join(
-    select
+      COUNT(fa.film_id)								AS ilosc_filmow 
+    FROM film_actor fa 
+    JOIN(
+    SELECT
       actor_id 
-    from actor) actor4
-      on fa.actor_id = actor4.actor_id 
-    group by 1	
+    FROM actor) actor4
+      ON fa.actor_id = actor4.actor_id 
+   GROUP BY 1	
 		
 ---- mamy wszystkie powyzsze dane w 1 zbiorze
-select
+SELECT
   tab1.*,
   tab2.ilosc_filmow,
-  round(tab1.dochod_z_wypozyczen/ilosc_filmow,2) 	as dochod_na_film 
-from tab1
-join tab2 
-  on tab1.actor_id = tab2.actor_id
+  ROUND(tab1.dochod_z_wypozyczen/ilosc_filmow,2) 	AS dochod_na_film 
+FROM tab1
+JOIN tab2 
+  ON tab1.actor_id = tab2.actor_id
 
 ---tworze tabele pomocnicza, gdzie mam dochodu per aktor i per film
-create temp table tab3 as
-    select 
+create temp table tab3 AS
+    SELECT 
       actor5.actor_id,
       actor5.first_name,
       actor5.last_name,
       fa.film_id,
-      sum(tpc.amount) 								as dochod_z_wypozyczen
-    from tab_rental_clean trc
-	join(
-	select
+      SUM(tpc.amount) 								AS dochod_z_wypozyczen
+    FROM tab_rental_clean trc
+	JOIN(
+	SELECT
 	  amount,rental_id
-	from tab_payment_clean) tpc 
-	  on trc.rental_id = tpc.rental_id
-    join tab_inventory_clean tic
-      on trc.inventory_id = tic.inventory_id
-    join(
-    select
+	FROM tab_payment_clean) tpc 
+	  ON trc.rental_id = tpc.rental_id
+    JOIN tab_inventory_clean tic
+      ON trc.inventory_id = tic.inventory_id
+    JOIN(
+    SELECT
       actor_id,
       film_id 
-    from film_actor) fa
-      on tic.film_id = fa.film_id 
-    join(
-    select
+    FROM film_actor) fa
+      ON tic.film_id = fa.film_id 
+    JOIN(
+    SELECT
       actor_id,
       first_name,
       last_name
-    from actor) actor5
-      on fa.actor_id = actor5.actor_id
-    group by 1,2,3,4
-    order by 1 desc
+    FROM actor) actor5
+      ON fa.actor_id = actor5.actor_id
+   GROUP BY 1,2,3,4
+    ORDER BY 1 DESC
 
 -- wyliczam mediane dochodu z filmow dla danego aktora
-create temp table tab4 as
-    select distinct 
+create temp table tab4 AS
+    SELECT DISTINCT 
       tab3.actor_id,
       tab3.first_name,
       tab3.last_name,
       tt.mediana  
-    from tab3
-    join(
-    select
+    FROM tab3
+    JOIN(
+    SELECT
       actor_id ,
-	  percentile_cont(0.5)  within group(
-	    order by dochod_z_wypozyczen desc)			 as mediana
-	from tab3
-	group by actor_id) tt 
-	  on tab3.actor_id = tt.actor_id
-    order by 4 desc
+	  percentile_cont(0.5)  WITHIN GROUP(
+	    ORDER BY dochod_z_wypozyczen DESC)			 AS mediana
+	FROM tab3
+	GROUP BY actor_id) tt 
+	  ON tab3.actor_id = tt.actor_id
+    ORDER BY 4 DESC
 
 ------- wszystkie dane zbiorczo w calosci
-create temp table tabela_zbiorcza as
-    select 
+create temp table tabela_zbiorcza AS
+    SELECT 
       tab1.*,
       tab2.ilosc_filmow,
-      round(tab1.dochod_z_wypozyczen/ilosc_filmow,2) as dochod_na_film,
+      ROUND(tab1.dochod_z_wypozyczen/ilosc_filmow,2) AS dochod_na_film,
       t4.mediana
-    from tab1
-    join tab2
-      on tab1.actor_id = tab2.actor_id 
-    join(
-    select
+    FROM tab1
+    JOIN tab2
+      ON tab1.actor_id = tab2.actor_id 
+    JOIN(
+    SELECT
       tab4.actor_id,
       tab4.mediana 
-    from tab4) t4
-      on tab1.actor_id = t4.actor_id
+    FROM tab4) t4
+      ON tab1.actor_id = t4.actor_id
 
 --- poszczegolne rankingi
 ---1) 10 najbardziej dochodowych aktor w calosci
-select *
-from tab1
-order by dochod_z_wypozyczen desc
-limit 10
+SELECT *
+FROM tab1
+ORDER BY dochod_z_wypozyczen DESC
+LIMIT 10
 
 --2) 10 najbardziej dochodowych aktorow na jeden film
-select
+SELECT
   tab1.actor_id,
   tab1.first_name,
   tab1.last_name,
-  round(tab1.dochod_z_wypozyczen/ilosc_filmow,2)	 as dochod_na_film
-from tab1
-join tab2
-  on tab1.actor_id = tab2.actor_id
-order by dochod_na_film desc
-limit 10
+  ROUND(tab1.dochod_z_wypozyczen/ilosc_filmow,2)	 AS dochod_na_film
+FROM tab1
+JOIN tab2
+  ON tab1.actor_id = tab2.actor_id
+ORDER BY dochod_na_film DESC
+LIMIT 10
 
 ---- 3) 10 najbardziej dochodowych aktorow pod wzgledem mediany dochodow z filmu
-select distinct
+SELECT DISTINCT
   tab3.actor_id,
   tab3.first_name,
   tab3.last_name,
   tt.mediana
-from tab3
-join(
-select
+FROM tab3
+JOIN(
+SELECT
   actor_id,
-  percentile_cont(0.5)  within group(
-    order by dochod_z_wypozyczen desc)    			as mediana
-from tab3
-group by actor_id) tt
-  on tab3.actor_id = tt.actor_id
-order by 4 desc
-limit 10
+  PERCENTILE_CONT(0.5)  WITHIN GROUP(
+    ORDER BY dochod_z_wypozyczen DESC)				AS mediana
+FROM tab3
+GROUP BY actor_id) tt
+  ON tab3.actor_id = tt.actor_id
+ORDER BY 4 DESC
+LIMIT 10
 
 ---- 4) ranking aktorow, pod wzgledem maksymalnego dochodu z danego filmu
 
-select 
+SELECT 
   actor_id,
   first_name,
   last_name,
-  max(dochod_z_wypozyczen)
-from tab3
-group by 1,2,3
-order by 4 desc
+  MAX(dochod_z_wypozyczen)
+FROM tab3
+GROUP BY 1,2,3
+ORDER BY 4 DESC
 ---### wnioski: nie istotna dana, bo tutaj konkretne filmy sa w czo³owce.
 
 	
 
 -----5) nadanie rankingu aktorów uwzglêdniaj¹c sumê ich rankingów z  3 miar, tj. dochodu ogolem, dochodu na film i mediany z filmow
 ---- (kazda ocena ma taka sam¹ wagê)
-with ranking as(
+WITH ranking AS(
 
-    select
+    SELECT
       actor_id,
       first_name,
       last_name,
-      rank() over(
-        order by dochod_z_wypozyczen desc)			as rank_wg_dochodu,
-      rank() over(
-        order by dochod_na_film desc)				as rank_wg_sredniego_dochodu,
-      rank() over(
-        order by mediana desc) 						as rank_wg_mediany_dochodu
-    from tabela_zbiorcza)
-    select *,
-      rank_wg_dochodu 
-    + rank_wg_sredniego_dochodu 
-    + rank_wg_mediany_dochodu 						as ranking_ogolny
-    from ranking
-    order by 7
+      RANK() OVER(
+        ORDER BY dochod_z_wypozyczen DESC)			AS rank_wg_dochodu,
+      RANK() OVER(
+        ORDER BY dochod_na_film DESC)				AS rank_wg_sredniego_dochodu,
+      RANK() OVER(
+        ORDER BY mediana DESC) 						AS rank_wg_mediany_dochodu
+    FROM tabela_zbiorcza
+    )
+    
+    SELECT *,
+      rank_wg_dochodu + 
+      rank_wg_sredniego_dochodu +
+      rank_wg_mediany_dochodu 						AS ranking_ogolny
+    FROM ranking
+    ORDER BY 7
  
