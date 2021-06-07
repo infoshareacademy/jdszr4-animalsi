@@ -35,7 +35,7 @@ SELECT
 -- po³aczenie obu zapytan w jedno//
 -- ile procent czasu dany ID by³ wypo¿yczony
 CREATE TEMP TABLE wsp_wypozyczen_I AS
-	WITH czas AS(
+	WITH czas AS (
 	
 		SELECT
 		  DATE_PART('day',
@@ -50,7 +50,7 @@ CREATE TEMP TABLE wsp_wypozyczen_I AS
 		FROM tab_rental_clean 
 		WHERE return_date IS NOT NULL
 	
-	), tabela AS(
+	), tabela AS (
 	
 		SELECT
 		  inventory_id,
@@ -88,14 +88,17 @@ CREATE TEMP TABLE tab_dl_wypozyczen_per_actor_I AS
   	a.first_name,
   	a.last_name 
   FROM wsp_wypozyczen_I	AS wsp1
-  JOIN inventory			AS i 
+  JOIN inventory		AS i 
   	ON wsp1.inventory_id = i.inventory_id 
-  JOIN film_actor 			AS fa 
+  JOIN film_actor 		AS fa 
   	ON i.film_id = fa.film_id 
-  JOIN actor 				AS a
+  JOIN actor 			AS a
   	ON fa.actor_id = a.actor_id 
  
-SELECT actor_id, first_name, last_name,
+SELECT
+  actor_id, 
+  first_name,
+  last_name,
   round((sum(dl_wypozyczenia)/sum(max_dostepnosc))::NUMERIC,3) AS wsk_wypozyczenia_per_actor
 FROM tab_dl_wypozyczen_per_actor_I tdwpa1
 GROUP BY 1,2,3
@@ -108,7 +111,7 @@ ORDER BY 4 DESC
 -- Czyli czas od pierwszego wypozyczenia do ostatniej daty jest nizszy niz 14400 minut
 
 CREATE TEMP TABLE wsp_wypozyczen_II AS
-	WITH czas_V1		AS(
+	WITH czas_V1 AS (
 	
 		SELECT
 		inventory_id,
@@ -125,13 +128,13 @@ CREATE TEMP TABLE wsp_wypozyczen_II AS
 		WHERE return_date IS NOT NULL
 		GROUP BY 1
 		
-	), czasy_zbiorcze	AS(
+	), czasy_zbiorcze AS (
 	
 		SELECT *
 		FROM czas_v1
 		WHERE max_dostepnosc >14400
 		
-	), tabela 			AS(
+	), tabela AS (
 	
 		SELECT
 		  inventory_id,
@@ -176,7 +179,10 @@ CREATE TEMP TABLE tab_dl_wypozyczen_per_actor_II AS
   JOIN actor 				AS a
   	ON fa.actor_id = a.actor_id 
  
-SELECT actor_id, first_name, last_name,
+SELECT
+  actor_id,
+  first_name,
+  last_name,
   round((sum(dl_wypozyczenia)/sum(max_dostepnosc))::NUMERIC,3) AS wsk_wypozyczenia_per_actor
 FROM tab_dl_wypozyczen_per_actor_II AS tdwpa2
 GROUP BY 1,2,3
