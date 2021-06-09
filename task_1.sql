@@ -34,7 +34,7 @@ SELECT *
 --w przypadku platnosci gdzie rental_id =291 mamy 1 platnosc za duzo, dla rental_id=1 mamy 4 platnosci za duzo
  
 SELECT rental_id,
-	   COUNT(rental_id)
+       COUNT(rental_id)
   FROM payment AS p 
  GROUP BY rental_id
 HAVING COUNT(rental_id)>1;
@@ -49,22 +49,22 @@ SELECT *
 CREATE TEMP TABLE analiza_1_filmy
 AS
  SELECT a.actor_id, f.film_id, r.rental_id,
-		a.first_name, a.last_name, f.title
+        a.first_name, a.last_name, f.title
    FROM actor AS a 
         JOIN film_actor AS fa 
         ON a.actor_id = fa.actor_id 
         
-		JOIN film AS f 
-		ON fa.film_id =f.film_id 
-		
-		JOIN inventory AS i 
-		ON f.film_id = i.film_id 
+        JOIN film AS f 
+        ON fa.film_id =f.film_id 
 
-		JOIN rental AS r 
-		ON i.inventory_id = r.inventory_id  --87980 wierszy
+        JOIN inventory AS i 
+        ON f.film_id = i.film_id 
 
-		JOIN payment AS p 
-		ON r.rental_id = p.rental_id 
+        JOIN rental AS r 
+        ON i.inventory_id = r.inventory_id  --87980 wierszy
+
+        JOIN payment AS p 
+        ON r.rental_id = p.rental_id 
   WHERE r.rental_id!=1 
     AND r.rental_id!=291 
     AND r.return_date IS NOT NULL 
@@ -78,22 +78,22 @@ SELECT *
 CREATE TEMP TABLE analiza_2_bez_filmow
 AS
  SELECT r.rental_id, a.actor_id,
-		a.first_name, a.last_name
+        a.first_name, a.last_name
    FROM actor AS a 
-		JOIN film_actor AS fa 
-		ON a.actor_id = fa.actor_id 
+        JOIN film_actor AS fa 
+        ON a.actor_id = fa.actor_id 
 
-		JOIN film AS f 
-		ON fa.film_id =f.film_id 
+        JOIN film AS f 
+        ON fa.film_id =f.film_id 
 
-		JOIN inventory AS i 
-		ON f.film_id = i.film_id 
+        JOIN inventory AS i 
+        ON f.film_id = i.film_id 
 
-		JOIN rental AS r 
-		ON i.inventory_id = r.inventory_id  --87980 wierszy
+        JOIN rental AS r 
+        ON i.inventory_id = r.inventory_id  --87980 wierszy
 
-		JOIN payment AS p 
-		ON r.rental_id = p.rental_id 
+        JOIN payment AS p 
+        ON r.rental_id = p.rental_id 
   WHERE r.rental_id!=1 
     AND r.rental_id!=291 
     AND r.return_date IS NOT NULL 
@@ -109,8 +109,8 @@ SELECT *
 CREATE TEMP TABLE aktor_ranking
 AS
  SELECT actor_id, first_name, last_name,
-		COUNT(rental_id) AS ilosc_wypozyczen,
-		DENSE_RANK() OVER (ORDER BY COUNT(rental_id) DESC) AS ranking_aktorow
+        COUNT(rental_id) AS ilosc_wypozyczen,
+        DENSE_RANK() OVER (ORDER BY COUNT(rental_id) DESC) AS ranking_aktorow
    FROM analiza_2_bez_filmow
   GROUP BY actor_id, first_name, last_name
   ORDER BY COUNT(rental_id) DESC;
@@ -136,22 +136,22 @@ SELECT *
 -- obliczam wielkosci statystyczne by porownac je z kazdym aktorem
 
 SELECT AVG(ilosc_wypozyczen) AS srednia_ilosc_wypozyczen,
-	   MIN(ilosc_wypozyczen) AS minimalna_ilosc_wypozyczen,
-	   MAX(ilosc_wypozyczen) AS maksymalna_ilosc_wypozyczen,
-	   MODE() WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS moda,
-	   PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS mediana,
-	   PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS q10,
-	   PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS q90
+       MIN(ilosc_wypozyczen) AS minimalna_ilosc_wypozyczen,
+       MAX(ilosc_wypozyczen) AS maksymalna_ilosc_wypozyczen,
+       MODE() WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS moda,
+       PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS mediana,
+       PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS q10,
+       PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_wypozyczen) AS q90
   FROM aktor_ranking;
 
 --tabela pokazujaca, ktory aktor jest powyzej/ponizej sredniej ilosci wypozyczen
  
 SELECT *,
-	   CASE 
-	   WHEN ilosc_wypozyczen > 434.8 THEN 'Aktor jest powyzej sredniej ilosc wypozyczen'
-	   WHEN ilosc_wypozyczen = 434.8 THEN 'Aktor ma ilosc wypozyczen rowna sredniej ilosci wypozyczen'
-	   ELSE 'Aktor jest ponizej sredniej wypozyczen' 
-	   END AS opis_rankingu
+       CASE 
+       WHEN ilosc_wypozyczen > 434.8 THEN 'Aktor jest powyzej sredniej ilosc wypozyczen'
+       WHEN ilosc_wypozyczen = 434.8 THEN 'Aktor ma ilosc wypozyczen rowna sredniej ilosci wypozyczen'
+       ELSE 'Aktor jest ponizej sredniej wypozyczen' 
+       END AS opis_rankingu
   FROM aktor_ranking;
 
 -- 2.RANKIG FILMOW POD WZGLEDEM ILOSCI WYPOZYCZEN, SPRAWDZENIE KTORE FILMY ZYSKALY NAJWIEKSZA POPULARNOSC
@@ -161,8 +161,8 @@ SELECT *,
 CREATE TEMP TABLE wypozyczane_filmy_ranking
 AS
  SELECT film_id, title,
-		COUNT(DISTINCT rental_id) AS ilosc_wypozyczen_danego_filmu,
-		DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT rental_id) DESC) AS ranking_wypozyczanych_filmow
+        COUNT(DISTINCT rental_id) AS ilosc_wypozyczen_danego_filmu,
+        DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT rental_id) DESC) AS ranking_wypozyczanych_filmow
    FROM analiza_1_filmy
   GROUP BY film_id, title
   ORDER BY COUNT(DISTINCT rental_id) DESC;
@@ -188,22 +188,22 @@ SELECT *
 --wielkosci statystyczne by porownac je z kazdym filmem
 
 SELECT ROUND(AVG(ilosc_wypozyczen_danego_filmu)::NUMERIC, 1) AS srednia_ilosc_wypozyczen_filmu,
-	   MIN(ilosc_wypozyczen_danego_filmu) AS minimalna_ilosc_wypozyczen_filmu,
-	   MAX(ilosc_wypozyczen_danego_filmu) AS maksymalna_ilosc_wypozyczen_filmu,
-	   MODE() WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS moda,
-	   PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS mediana,
-	   PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS q10,
-	   PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS q90
+       MIN(ilosc_wypozyczen_danego_filmu) AS minimalna_ilosc_wypozyczen_filmu,
+       MAX(ilosc_wypozyczen_danego_filmu) AS maksymalna_ilosc_wypozyczen_filmu,
+       MODE() WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS moda,
+       PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS mediana,
+       PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS q10,
+       PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_wypozyczen_danego_filmu) AS q90
   FROM wypozyczane_filmy_ranking;
 
 --tabela pokazujaca ktory z filmow jak wypada na tle sredniej ilosci wypozczen
 
 SELECT *,
-	   CASE  
-	   WHEN ilosc_wypozyczen_danego_filmu > 16.6 THEN 'Film ma ilosc wypozczen powyzej sredniej'
-	   WHEN ilosc_wypozyczen_danego_filmu = 16.6 THEN 'Film ma ilosc wypozczen rowna sredniej'
-	   ELSE 'Film ma ilosc wypozczen ponizej sredniej' 
-	   END AS opis_rankingu
+       CASE  
+       WHEN ilosc_wypozyczen_danego_filmu > 16.6 THEN 'Film ma ilosc wypozczen powyzej sredniej'
+       WHEN ilosc_wypozyczen_danego_filmu = 16.6 THEN 'Film ma ilosc wypozczen rowna sredniej'
+       ELSE 'Film ma ilosc wypozczen ponizej sredniej' 
+       END AS opis_rankingu
   FROM wypozyczane_filmy_ranking;
 
 -- 3.RANKING AKTOROW POD WZGLEDEM ILOSCI WYPOZYCZEN W ROZBICIU NA ILOSC WYPOZCZEN KAZDEGO FILMU W KTORYM BRAL UDZIAL
@@ -211,9 +211,9 @@ SELECT *,
 CREATE TEMP TABLE ranking_aktorow_i_filmow
 AS
  SELECT actor_id, film_id,
-		first_name, last_name, title,
-		COUNT (rental_id) AS ilosc_wypozyczen_filmu_na_aktora,
-		DENSE_RANK() OVER (ORDER BY COUNT (rental_id) DESC) AS miejsce_w_rankingu_wypozyczen_filmow
+        first_name, last_name, title,
+        COUNT (rental_id) AS ilosc_wypozyczen_filmu_na_aktora,
+        DENSE_RANK() OVER (ORDER BY COUNT (rental_id) DESC) AS miejsce_w_rankingu_wypozyczen_filmow
    FROM analiza_1_filmy
   GROUP BY actor_id, first_name, last_name, film_id, title;
 
@@ -230,7 +230,7 @@ SELECT *
 --pokazuje pozycje filmu w rankingu wypozyczen, suma_wypozyczen aktora, to natomiast ilosc wypozyczen filmow z danym aktorem
  
 SELECT *,
-	   SUM(ilosc_wypozyczen_filmu_na_aktora) OVER (PARTITION BY actor_id) AS suma_wypozyczen_aktora
+       SUM(ilosc_wypozyczen_filmu_na_aktora) OVER (PARTITION BY actor_id) AS suma_wypozyczen_aktora
   FROM ranking_aktorow_i_filmow
  ORDER BY suma_wypozyczen_aktora DESC, miejsce_w_rankingu_wypozyczen_filmow ASC;
 
@@ -239,8 +239,8 @@ SELECT *,
 CREATE TEMP TABLE ilosc_filmow_na_aktora
 AS
  SELECT actor_id, first_name, last_name,
-		COUNT(DISTINCT film_id) AS ilosc_filmow_danego_aktora,
-		DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT film_id) DESC) AS ranking_ilosci_filmow_na_aktora
+        COUNT(DISTINCT film_id) AS ilosc_filmow_danego_aktora,
+        DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT film_id) DESC) AS ranking_ilosci_filmow_na_aktora
    FROM analiza_1_filmy
   GROUP BY actor_id, first_name, last_name
   ORDER BY COUNT(DISTINCT film_id) DESC;
@@ -253,20 +253,20 @@ SELECT *
 --wielkosci statystyczne wyznaczone dla rankingu ilosci filmow w ktorych grali aktorzy
  
 SELECT ROUND(AVG(ilosc_filmow_danego_aktora)::NUMERIC, 1) AS srednia_ilosc_filmow_aktorow,
-	   MIN(ilosc_filmow_danego_aktora) AS minimalna_ilosc_filmow_aktora,
-	   MAX(ilosc_filmow_danego_aktora) AS maksymalna_ilosc_filmow_aktora,
-	   MODE() WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS moda,
-	   PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS mediana,
-	   PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS q10,
-	   PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS q90
+       MIN(ilosc_filmow_danego_aktora) AS minimalna_ilosc_filmow_aktora,
+       MAX(ilosc_filmow_danego_aktora) AS maksymalna_ilosc_filmow_aktora,
+       MODE() WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS moda,
+       PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS mediana,
+       PERCENTILE_DISC(0.1) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS q10,
+       PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY ilosc_filmow_danego_aktora) AS q90
   FROM ilosc_filmow_na_aktora;
 
 SELECT *,
-	   CASE 
-	   WHEN ilosc_filmow_danego_aktora > 26.2 THEN 'Aktor gral w liczbie filmow powyzej sredniej'
-	   WHEN ilosc_filmow_danego_aktora = 26.2 THEN 'Aktor gral w liczbie filmow rownej sredniej '
-	   ELSE 'Aktor gral w liczbie filmow ponizej sredniej' 
-	   END AS opis_rankingu
+       CASE 
+       WHEN ilosc_filmow_danego_aktora > 26.2 THEN 'Aktor gral w liczbie filmow powyzej sredniej'
+       WHEN ilosc_filmow_danego_aktora = 26.2 THEN 'Aktor gral w liczbie filmow rownej sredniej '
+       ELSE 'Aktor gral w liczbie filmow ponizej sredniej' 
+       END AS opis_rankingu
   FROM ilosc_filmow_na_aktora;
  
 -- 5. SPRAWDZENIE CZY ILOSC WYPOZYCZEN AKTORA ZALEZY OD ILOSCI FILMOW W KTORYCH GRAŁ, ZBADANIE KORELACJI
@@ -276,9 +276,9 @@ SELECT *,
 CREATE TEMP TABLE srednia_wypozyczen_per_film 
 AS
  SELECT actor_id, first_name, last_name,
-	    COUNT(rental_id) AS ilosc_wypozyczonych_filmow,
-		COUNT(DISTINCT film_id) AS ilosc_filmow_aktora,
-		ROUND(COUNT(rental_id)/COUNT(DISTINCT film_id)::NUMERIC,1) AS srednia_wypozyczen_na_film
+        COUNT(rental_id) AS ilosc_wypozyczonych_filmow,
+        COUNT(DISTINCT film_id) AS ilosc_filmow_aktora,
+        ROUND(COUNT(rental_id)/COUNT(DISTINCT film_id)::NUMERIC,1) AS srednia_wypozyczen_na_film
    FROM analiza_1_filmy
   GROUP BY actor_id, first_name, last_name
   ORDER BY COUNT(rental_id) DESC;
