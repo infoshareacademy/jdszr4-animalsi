@@ -9,8 +9,8 @@
 
 --- Kazdy nowy blok kodu zaczyna sie od komentarzaa w nastepujacej postaci "--- KOMENTARZ ---" 
 
---- sprawdzam ile mamy uniklanych dziennych cen wypozyczen filmow  --- 
 
+--- sprawdzam ile mamy uniklanych dziennych cen wypozyczen filmow  --- 
 
 SELECT * 
   FROM rental;
@@ -23,7 +23,8 @@ SELECT f.rental_rate,
   FROM film f
  GROUP BY 1;
 
---- Sprawdzam jaka ilosc filmow przypada na dana cene wypozyczenia
+
+ --- Sprawdzam jaka ilosc filmow przypada na dana cene wypozyczenia
  
 SELECT *
   FROM film f
@@ -43,7 +44,6 @@ SELECT *
 --- Szukamy aktorow ktorzy graja w filamch o cenie dziennej 0.99 ---
 --- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-
 CREATE TEMP TABLE aktorzy_mala_cena_dzienna AS
     SELECT fa.actor_id,      
            fa.film_id 
@@ -54,6 +54,7 @@ CREATE TEMP TABLE aktorzy_mala_cena_dzienna AS
                            WHERE f.rental_rate = 0.99  
                          );
                        
+
 --- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane                    
 
 SELECT  adc.actor_id,       
@@ -66,7 +67,6 @@ SELECT  adc.actor_id,
 --- Szukamy aktorow ktorzy graja w filmach o cenie dziennej 4.99 ---
 --- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-
  CREATE TEMP TABLE aktorzy_duza_cena_dzienna AS
     SELECT * 
       FROM film_actor fa 
@@ -75,6 +75,7 @@ SELECT  adc.actor_id,
                             FROM film f
                            WHERE f.rental_rate = 4.99  
                         ); 
+
 
 --- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane         
 			
@@ -88,8 +89,7 @@ SELECT  adc.actor_id,
 --- Szukamy aktorow ktorzy graja w filmach o cenie dziennej 2.99 ---
 --- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-
- CREATE TEMP TABLE aktorzy_srednia_cena_dzienna AS
+CREATE TEMP TABLE aktorzy_srednia_cena_dzienna AS
     SELECT * 
       FROM film_actor fa 
      WHERE fa.film_id IN (
@@ -97,6 +97,7 @@ SELECT  adc.actor_id,
                              FROM film f
                             WHERE f.rental_rate = 2.99  
                          ); 
+
 
 --- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane   
 			
@@ -111,7 +112,6 @@ SELECT count(*)
 
 
 --- Proba porowanania zbiorow id aktorow ktore sa stworzone w 3 powyszych czesciach ( cena filmu 0.99,2.99,4.99 ) ---
-
 
 SELECT  actor_id
   FROM aktorzy_mala_cena_dzienna --- cena: 0.99
