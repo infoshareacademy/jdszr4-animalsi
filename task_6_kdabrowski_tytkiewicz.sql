@@ -7,14 +7,16 @@
 --- w oparciu o te wartosci. 
 --- Nastepnie sprawdzam czesci wspolne zbiorow zeby sprobowac odpwiedziec na postawione pytanie
 
+--- Kazdy nowy blok kodu zaczyna sie od komentarzaa w nastepujacej postaci "--- KOMENTARZ ---" 
 
 --- sprawdzam ile mamy uniklanych dziennych cen wypozyczen filmow  --- 
+
 
 SELECT * 
   FROM rental;
 
 SELECT  DISTINCT f.rental_rate 
- FROM film f; 
+  FROM film f; 
 
 SELECT f.rental_rate,      
        count(*)
@@ -31,46 +33,49 @@ SELECT *
   FROM film f
  WHERE f.rental_rate = 2.99; 
 
-
 SELECT * 
   FROM film f 
  WHERE f.rental_rate = 4.99;
  
- --- Rezultat: Mamy 3 ceny, liczba filmow rozlozona jest w miare rownomiernie rozlozona
+--- Rezultat: Mamy 3 ceny, liczba filmow rozlozona jest w miare rownomiernie rozlozona
+
 
 --- Szukamy aktorow ktorzy graja w filamch o cenie dziennej 0.99 ---
---- Wazne sa id aktorow ktore pobieramy z tablei film_actor
+--- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-CREATE TEMP TABLE aktorzy_mala_cena_dzienna
-AS
-	SELECT fa.actor_id,      
-		   fa.film_id 
-	  FROM film_actor fa 
-	 WHERE fa.film_id IN (		
-						   SELECT f.film_id 
-						     FROM film f
-							WHERE f.rental_rate = 0.99  
-                        );
+
+CREATE TEMP TABLE aktorzy_mala_cena_dzienna AS
+    SELECT fa.actor_id,      
+           fa.film_id 
+      FROM film_actor fa 
+     WHERE fa.film_id IN (		
+                          SELECT f.film_id 
+                            FROM film f
+                           WHERE f.rental_rate = 0.99  
+                         );
+                       
 --- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane                    
 
 SELECT  adc.actor_id,       
-		count(*) AS liczba_flimow
+        count(*) AS liczba_flimow
   FROM aktorzy_mala_cena_dzienna adc
  GROUP BY 1 
  ORDER BY 2 DESC;  --- 200 aktorów
 
+ 
 --- Szukamy aktorow ktorzy graja w filmach o cenie dziennej 4.99 ---
---- Wazne sa id aktorow ktore pobieramy z tablei film_actor
+--- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-CREATE TEMP TABLE aktorzy_duza_cena_dzienna
-AS
-	SELECT * 
-	  FROM film_actor fa 
-	 WHERE fa.film_id IN (		
-						   SELECT f.film_id 
-							 FROM film f
-							WHERE f.rental_rate = 4.99  
-						 ); 
+
+ CREATE TEMP TABLE aktorzy_duza_cena_dzienna AS
+    SELECT * 
+      FROM film_actor fa 
+    WHERE fa.film_id IN (		
+                          SELECT f.film_id 
+                            FROM film f
+                           WHERE f.rental_rate = 4.99  
+                        ); 
+
 --- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane         
 			
 SELECT  adc.actor_id,       
@@ -79,20 +84,21 @@ SELECT  adc.actor_id,
  GROUP BY 1 
  ORDER BY 2 DESC; --- 200 aktorów 
 
+ 
 --- Szukamy aktorow ktorzy graja w filmach o cenie dziennej 2.99 ---
---- Wazne sa id aktorow ktore pobieramy z tablei film_actor
+--- Wazne sa id aktorow ktore pobieramy z tablei film_actor ---
 
-CREATE TEMP TABLE aktorzy_srednia_cena_dzienna
-AS
-	SELECT * 
-	  FROM film_actor fa 
-	 WHERE fa.film_id IN (
-							SELECT f.film_id 
-							  FROM film f
-							 WHERE f.rental_rate = 2.99  
-						 ); 
 
---- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane         
+ CREATE TEMP TABLE aktorzy_srednia_cena_dzienna AS
+    SELECT * 
+      FROM film_actor fa 
+     WHERE fa.film_id IN (
+                           SELECT f.film_id 
+                             FROM film f
+                            WHERE f.rental_rate = 2.99  
+                         ); 
+
+--- Pogrupowanie aktorow wraz z iloscia filmow w jakich grali w oparciu o powyzsze dane   
 			
 SELECT  aksc.actor_id,       
         count(*) as liczba_flimow
@@ -103,7 +109,9 @@ SELECT  aksc.actor_id,
 SELECT count(*) 
   FROM actor a; --- 200 aktorow w bazie
 
---- Proba porowanania zbiorow id aktorow ktore sa stworzone w powyszych czesciach ---
+
+--- Proba porowanania zbiorow id aktorow ktore sa stworzone w 3 powyszych czesciach ( cena filmu 0.99,2.99,4.99 ) ---
+
 
 SELECT  actor_id
   FROM aktorzy_mala_cena_dzienna --- cena: 0.99
@@ -127,7 +135,6 @@ SELECT  actor_id
 --- Wynik : 200 aktorow co jest rowne ogolnej ilosci aktorow 
 --- Wnika z tego ze aktor nie ma zbyt duzego wplywu na srednia i mala cene wypozyczen filmow 
 
-
 SELECT  actor_id
   FROM aktorzy_srednia_cena_dzienna --- cena 2.99
 
@@ -139,9 +146,7 @@ SELECT  actor_id
 --- Wynik : 200 aktorow co jest rowne ogolnej ilosci aktorow 
 --- Wnika z tego ze aktor nie ma zbyt duzego wplywu na duza i mala  ceny wypozycen filmow 
 
-
-
-
+  
 --- Czêœæ 2. Analiza ceny wypo¿yczenia filmu. W jakiej cenie najczêœciej wypo¿yczamy filmy ? ---
 
   
@@ -149,8 +154,7 @@ SELECT  actor_id
   Usuwam rekordy zawieraj¹ce anomalie: film id = 257(poniewa¿ nie zawiera on przypisanych aktorów, 
   rekordy, gdzie amount = 0 oraz te których rental_id ma wiecej ni¿ jedn¹ p³atnoœæ (payment_id). */
 
-CREATE TEMP TABLE t1_wypozyczenia
-AS
+CREATE TEMP TABLE t1_wypozyczenia AS
 SELECT 		r.rental_id, 
 			r.inventory_id 
 FROM rental AS r 
@@ -165,8 +169,7 @@ SELECT count(*) FROM t1_wypozyczenia;				-- 15 848 wierszy
 /*£¹czê wczeœniej utworzon¹ tabelkê t1_wypozyczenia z tabel¹ inventory 
   w celu uzyskania id wypo¿yczanych filmów. */
 	
-CREATE TEMP TABLE t2_wypozyczenia_filmy
-AS
+CREATE TEMP TABLE t2_wypozyczenia_filmy AS
 SELECT 		t1.rental_id,
 			i.film_id 
 FROM t1_wypozyczenia t1
@@ -180,8 +183,7 @@ SELECT count(*) FROM t2_wypozyczenia_filmy;				-- 15 848 wierszy
   w celu uzyskania pe³nych tytu³ów wypo¿yczanych filmów.
   oraz cen za ich wypo¿yczenie. */
 
-CREATE TEMP TABLE t3_wypozyczenia_filmy_ceny
-AS
+CREATE TEMP TABLE t3_wypozyczenia_filmy_ceny AS
 SELECT 		t2.*,
 			f.title,
 			f.rental_rate 
@@ -194,8 +196,7 @@ SELECT count (*) FROM t3_wypozyczenia_filmy_ceny;		  -- 15 848 wierszy
 /*£¹czê wczeœniej utworzon¹ tabelkê t3_wypozyczenia_filmy_ceny z tabel¹ film_actor 
   w celu uzyskania id aktorów graj¹cych w analizowanych filmach. */
 
-CREATE TEMP TABLE t4_wypozyczenia_filmy_ceny_aktorzy
-AS
+CREATE TEMP TABLE t4_wypozyczenia_filmy_ceny_aktorzy AS
 SELECT 		t3.*, 
 			fa.actor_id 
 FROM t3_wypozyczenia_filmy_ceny t3 
@@ -206,8 +207,7 @@ SELECT count(*) FROM t4_wypozyczenia_filmy_ceny_aktorzy; 	 -- 86 989 wiersze(w j
 
 /*Sprawdzam iloœæ wypo¿yczeñ dla ka¿dego filmu (wraz z cenami za wypo¿yczenie tych filmów). */
 
-CREATE TEMP TABLE t5_film_cena_ilosc_wypozyczen
-AS
+CREATE TEMP TABLE t5_film_cena_ilosc_wypozyczen AS
 SELECT  	film_id
 			rental_rate,
  			count(film_id) AS ilosc_wypozyczen
