@@ -8,7 +8,7 @@ SELECT *
 CREATE TEMP TABLE stan_magazynowy
 AS
  SELECT i.inventory_id, a.actor_id, f.film_id, r.rental_id,
-	    a.first_name, a.last_name, f.title
+        a.first_name, a.last_name, f.title
    FROM actor AS a 
         JOIN film_actor AS fa 
         ON a.actor_id = fa.actor_id 
@@ -32,8 +32,8 @@ AS
 --ZESTAWIENIE ILOŚCI SZTUK FILMÓW NA MAGAZYNIE, W KTÓRYCH GRAŁ DANY AKTOR WRAZ Z RANKINGIEM
 
 SELECT actor_id, first_name, last_name,
-	   COUNT(DISTINCT inventory_id) AS ilosc_sztuk_na_magazynie,
-	   DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT inventory_id) DESC) AS ranking_sztuk_na_magazynie
+       COUNT(DISTINCT inventory_id) AS ilosc_sztuk_na_magazynie,
+       DENSE_RANK() OVER (ORDER BY COUNT(DISTINCT inventory_id) DESC) AS ranking_sztuk_na_magazynie
   FROM stan_magazynowy
  GROUP BY actor_id, first_name, last_name
  ORDER BY 4 DESC;
@@ -41,8 +41,8 @@ SELECT actor_id, first_name, last_name,
 --ILOŚĆ WYPOŻCZEŃ DANEGO AKTORA, UWZGLEDNIA TE SAME FILMY ALE WYPOŻYCZONE PRZEZ RÓŻNE OSOBY
 
 SELECT actor_id, first_name, last_name,
-	   COUNT(rental_id) AS ilosc_wypozyczen,
-	   DENSE_RANK() OVER (ORDER BY COUNT(rental_id) DESC) AS ranking_aktorow
+       COUNT(rental_id) AS ilosc_wypozyczen,
+       DENSE_RANK() OVER (ORDER BY COUNT(rental_id) DESC) AS ranking_aktorow
   FROM stan_magazynowy
  GROUP BY actor_id, first_name, last_name
  ORDER BY COUNT(rental_id) DESC;
@@ -53,8 +53,8 @@ SELECT actor_id, first_name, last_name,
 CREATE TEMP TABLE dane_do_korelacji
 AS
  SELECT actor_id, first_name, last_name,
-	    COUNT(DISTINCT inventory_id) AS ilosc_sztuk_na_magazynie,
-	    COUNT(rental_id) AS ilosc_wypozyczen
+        COUNT(DISTINCT inventory_id) AS ilosc_sztuk_na_magazynie,
+        COUNT(rental_id) AS ilosc_wypozyczen
    FROM stan_magazynowy
   GROUP BY actor_id, first_name, last_name
   ORDER BY 5 DESC;
