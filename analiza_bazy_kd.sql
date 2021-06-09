@@ -229,5 +229,3 @@ where p.rental_id = 1;
 select * 
 from payment p 
 where p.rental_id = 291; 
-
-
