@@ -1,6 +1,6 @@
 # Sklep DVD - Czy aktor ma wp³yw na popularnoœæ filmu i dochód z wypo¿yczeñ
 
-##### jdszr4-animalsi
+##### autorzy grupa: jdszr4-animalsi 
 
 ## Cel projektu
 
