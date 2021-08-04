@@ -2,5 +2,6 @@
 *.Rhistory
 
 *Untitled
+*.csv
 
 */.ipynb_checkpoints/
