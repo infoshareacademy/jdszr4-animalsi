@@ -1,6 +1,9 @@
 *checkpoint.ipynb
 *.Rhistory
 
-*Untitled.ipynb
+
+
+*Untitled
+*.csv
 
 */.ipynb_checkpoints/
