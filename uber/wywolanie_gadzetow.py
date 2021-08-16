@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import ipywidgets as widgets
 from IPython.display import clear_output
 
-report=pd.read_csv("C:/Users/Dawid/Desktop/kurs/jdszr4-animalsi/uber/task7/dane_surowe_do_kalkulatora_task7.csv")
+report=pd.read_csv("task7/dane_surowe_do_kalkulatora_task7.csv")
 
 # Slownik danych
 ## wiek auta z przedzialu
@@ -72,7 +72,7 @@ DriverSexDict = {"Kobieta" :2,
 
 
 #slider defincja
-wiek_slider = widgets.IntSlider(value=20, min=16, max=100,  description = "Podaj wiek kierowcy")
+wiek_slider = widgets.IntSlider(value=20, min=16, max=100,  description = "Podaj wiek kierowcy",style= {'description_width': 'initial'})
 def wiek_kierowcy(x):
     przedzial = 0
     if x <=21:
@@ -89,10 +89,10 @@ def wiek_kierowcy(x):
 
 
 #pola wyboru definicje
-CarAge = widgets.Dropdown(options = CarAgeDict, description='Wiek auta:')
-Make= widgets.Dropdown(options = MakeDict, description='Marka auta:')
-Seatpos= widgets.Dropdown(options = SeatposDict, description='Miejsce siedzenia')
-DriverSex =widgets.Dropdown(options = DriverSexDict,description='Plec kierowcy')
+CarAge = widgets.Dropdown(options = CarAgeDict, description='Wiek auta:',style= {'description_width': 'initial'})
+Make= widgets.Dropdown(options = MakeDict, description='Marka auta:',style= {'description_width': 'initial'})
+Seatpos= widgets.Dropdown(options = SeatposDict, description='Miejsce siedzenia',style= {'description_width': 'initial'})
+DriverSex =widgets.Dropdown(options = DriverSexDict,description='Plec kierowcy',style= {'description_width': 'initial'})
 
 
 
