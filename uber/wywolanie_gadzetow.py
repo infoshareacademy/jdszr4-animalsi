@@ -69,10 +69,11 @@ SeatposDict = {"Obok kierowcy" :1,
 DriverSexDict = {"Kobieta" :2,
                  "Mezczyzna" :1}
 
-
-
 #slider defincja
-wiek_slider = widgets.IntSlider(value=20, min=16, max=100,  description = "Podaj wiek kierowcy",style= {'description_width': 'initial'})
+style = {'description_width': '150px'}
+layout = {'width': '500px'}
+
+wiek_slider = widgets.IntSlider(value=20, min=16, max=100,  description = "Podaj wiek kierowcy",style = style,layout=layout)
 def wiek_kierowcy(x):
     przedzial = 0
     if x <=21:
@@ -88,13 +89,12 @@ def wiek_kierowcy(x):
     return przedzial
 
 
+
 #pola wyboru definicje
-CarAge = widgets.Dropdown(options = CarAgeDict, description='Wiek auta:',style= {'description_width': 'initial'})
-Make= widgets.Dropdown(options = MakeDict, description='Marka auta:',style= {'description_width': 'initial'})
-Seatpos= widgets.Dropdown(options = SeatposDict, description='Miejsce siedzenia',style= {'description_width': 'initial'})
-DriverSex =widgets.Dropdown(options = DriverSexDict,description='Plec kierowcy',style= {'description_width': 'initial'})
-
-
+CarAge = widgets.Dropdown(options = CarAgeDict, description='Wiek auta:',style = style,layout=layout)
+Make= widgets.Dropdown(options = MakeDict, description='Marka auta:',style = style,layout=layout)
+Seatpos= widgets.Dropdown(options = SeatposDict, description='Miejsce siedzenia',style = style,layout=layout)
+DriverSex =widgets.Dropdown(options = DriverSexDict,description='Plec kierowcy',style = style,layout=layout)
 
 #definicja przycisku run
 run = widgets.Button(description = "wylicz",tooltip='Kliknij',icon='search',button_style='info')
@@ -125,7 +125,6 @@ def gadzety(x,y,a,b,c):
     values["option2"] = a
     values["option3"] = b
     values["option4"] = c
-
 
 
 
