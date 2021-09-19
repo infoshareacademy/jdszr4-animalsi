@@ -23,10 +23,10 @@ X = dane[dane.columns[0:11]]
 Y = dane["quality_category"]
 
 #podzial zbioru na train i test
-X_train_all, X_test, Y_train_all, Y_test = train_test_split(X,Y, test_size = 0.2)
+X_train_all, X_test, Y_train_all, Y_test = train_test_split(X,Y, test_size = 0.2, random_state = 6)
 
 #podzial na walidacyjny
-X_train_reduced, X_val, Y_train_reduced, Y_val = train_test_split(X_train_all,Y_train_all, test_size = 0.1)
+X_train_reduced, X_val, Y_train_reduced, Y_val = train_test_split(X_train_all,Y_train_all, test_size = 0.1, random_state = 6)
 
 #przeskalowanie danych dla calego zbioru treningowego
 scaler = StandardScaler().fit(X_train_all)
