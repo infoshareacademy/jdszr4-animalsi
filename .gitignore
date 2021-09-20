@@ -1,7 +1,7 @@
 *checkpoint.ipynb
 *.Rhistory
 
-
+*.pyc
 
 *Untitled
 *.csv
@@ -9,4 +9,4 @@
 */.ipynb_checkpoints/
 
 
-pycache/
+*__pycache
