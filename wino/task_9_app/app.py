@@ -18,9 +18,10 @@ def home():
 def predict():
 
     int_features = [float(x) for x in request.form.values()]
-    final_features = [np.array(int_features)]
-    #defaults = np.array([[4,2],[4,2]])
-    #final_features = np.concatenate([final_features1, defaults],axis=1)
+    final_features1 = [np.array(int_features)]
+    #definicja domyslnych ustawien modelu
+    defaults = [np.array([4,2])]
+    final_features = np.hstack([final_features1, defaults])
     prediction = model.predict(final_features)
 
     output = ["poor, don't drink it. Life is too short" if prediction[0] == 1 else "good, i recommend"]
