@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>wine quality app</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+</head>
+
+<body style="background: rgb(17, 1, 1);">
+  <div class="login-wrapper", style= "display: flex;align-items: center;justify-content: center;
+  width: 100vw;height: 100vh;">
+    <div class="login">
+      <h1>Check you wine quality</h1>
+
+        <!-- Main Input For Receiving Query to our ML -->
+        <form action="{{ url_for('predict')}}"method="post">
+          <input type="text" name="fixed acidity" placeholder="fixed acidity [values beetwen 1-20.0]" required="required" />
+          <input type="text" name="volatile acidity" placeholder="volatile acidity [values beetwen 0-2.0]" required="required" />
+          <input type="text" name="citric acid" placeholder="citric acid [values beetwen 0-1.0]" required="required" />
+          <input type="text" name="residual sugar" placeholder="residual sugar [values beetwen 0 -20.0]" required="required" />
+    
+          <input type="text" name="total sulfur dioxide" placeholder="total sulfur dioxide [values beetwen 0-300.0]" required="required" />
+          <input type="text" name="density" placeholder="density [values beetwen 0.990-1.010]" required="required" />
+    
+          <input type="text" name="sulphates" placeholder="sulphates [values beetwen 0-2.0]" required="required" />
+          <input type="text" name="alcohol" placeholder="alcohol [values beetwen 6-20.0]" required="required" />
+    
+            <button type="submit" class="btn btn-primary btn-block btn-large">Check if you wine is good or not</button>
+        </form>
+
+      <br>
+      <br>
+      {{ prediction_text }}
+
+    </div>
+  </div>
+
+</body>
+</html>
