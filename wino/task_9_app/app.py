@@ -34,7 +34,7 @@ def predict():
     final_features = [np.hstack([a,defaults_4_5,b, defaults_8,c ])]
     prediction = model.predict(scaler.transform(final_features))
 
-    output = ["poor, not drink it. Life is too short" if prediction[0] == 1 else "good, i recommend"]
+    output = ["poor, do not drink it. Life is too short" if prediction[0] == 1 else "good, i recommend"]
 
     return render_template('index.html', prediction_text="Your wine is  {}".format(output).replace("['", "").replace("']",""))
 
