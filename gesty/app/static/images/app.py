@@ -22,7 +22,7 @@ def index():
     return render_template('index.html')
 
 
-# upload image used in prediction and push forward to predict section
+# upload image used in prediction
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_file():
     file = request.files['file']
