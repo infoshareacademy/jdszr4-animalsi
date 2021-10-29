@@ -7,9 +7,13 @@ from werkzeug.utils import secure_filename
 from preprocessing.dane import *
 
 
-# define our path
-path = os.getcwd()
-UPLOAD_FOLDER = os.path.join(path, 'static/images')
+#define our paths
+path_parent =os.path.dirname(os.getcwd())
+model_path = os.path.join(path_parent,'model_dt/model_dt.h5')
+UPLOAD_FOLDER = os.path.join(path_parent, 'app/static/images')
+
+# load our defined model
+model = tf.keras.models.load_model(model_path)
 
 # Instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
@@ -29,10 +33,6 @@ def upload_file():
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return redirect('/predict')
-
-# load our defined model
-model = tf.keras.models.load_model("model_dt.h5")
-
 
 # create our predictions 
 @app.route('/predict', methods = ['GET','POST'])
