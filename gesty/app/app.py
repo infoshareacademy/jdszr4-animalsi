@@ -1,19 +1,20 @@
 import numpy as np
-import tensorflow as tf
+from tensorflow.keras import models
 import cv2
 import os
 from flask import Flask, render_template, request, redirect, flash
 from werkzeug.utils import secure_filename
-from preprocessing.dane import *
+
 
 
 #define our paths
 path_parent =os.path.dirname(os.getcwd())
+from preprocessing.dane import *
 model_path = os.path.join(path_parent,'model_dt/model_dt.h5')
 UPLOAD_FOLDER = os.path.join(path_parent, 'app/static/images')
 
 # load our defined model
-model = tf.keras.models.load_model(model_path)
+model = models.load_model(model_path)
 
 # Instatiate flask app  
 app = Flask(__name__, template_folder='./templates')
