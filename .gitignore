@@ -10,3 +10,12 @@
 
 
 *__pycache
+
+*logs
+
+*nowe_foto
+*sign
+
+*/static/images
+
+*.PNG
